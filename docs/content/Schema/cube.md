@@ -300,18 +300,25 @@ cube(`OrderFacts`, {
 });
 ```
 
-`every` can accept only equal time intervals - so  "Day of month" and "month" intervals in CRON expressions are not supported.
+`every` can accept only equal time intervals - so "Day of month" and "month" intervals in CRON expressions are not supported.
+
+<!-- prettier-ignore-start -->
+[[warning |]]
+| Cube.js supports two different formats of CRON expressions: with leading seconds (6 parts) and leading minutes (5 parts).
+<!-- prettier-ignore-end -->
 
 Such `refreshKey` is just a syntactic sugar over `refreshKey` SQL.
 It's guaranteed that `refreshKey` change it's value at least once during `every` interval.
 It will be converted to appropriate SQL select which value will change over time based on interval value.
 Values of interval based `refreshKey` are tried to be checked ten times within defined interval but not more than once per `1 second` and not less than once per `5 minute`.
 For example if interval is `10 minute` it's `refreshKeyRenewalThreshold` will be 60 seconds and generated `refreshKey` SQL (Postgres) would be:
+
 ```sql
 SELECT FLOOR(EXTRACT(EPOCH FROM NOW()) / 600)
 ```
 
-For `5 second` interval `refreshKeyRenewalThreshold` will be just 1 second and SQL will be
+For `5 second` interval `refreshKeyRenewalThreshold` will be just 1 second and SQL will be:
+
 ```sql
 SELECT FLOOR(EXTRACT(EPOCH FROM NOW()) / 5)
 ```
